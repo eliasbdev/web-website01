@@ -1,0 +1,64 @@
+name: Suriin ang Itsura at Galaw
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  playwright-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Ihanda ang Playwright
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      
+      - name: I-install ang Playwright
+        run: |
+          npm init -y
+          npm install @playwright/test
+          npx playwright install --with-deps chromium
+
+      - name: Gumawa ng pagsusuri
+        run: |
+          cat > test.spec.js << 'EOF'
+          const { test, expect } = require('@playwright/test');
+          
+          test.describe("Tindahan ni Elias", () => {
+            // 1. Buksan ang Home Page
+            test("Home page - lumalabas ang logo", async ({ page }) => {
+              await page.goto('file://' + __dirname + '/index.html');
+              
+              // Tignan: nakikita ba ang logo?
+              const logo = page.locator('img[src*="logo"]');
+              await expect(logo).toBeVisible();
+              
+              // Tignan: may pamagat ba?
+              await expect(page).toHaveTitle(/Elias/);
+            });
+            
+            // 2. Hamburger Menu - gumagana ba?
+            test("Hamburger menu - bumubukas", async ({ page }) => {
+              await page.goto('file://' + __dirname + '/index.html');
+              
+              // Hanapin ang hamburger icon
+              const menu = page.locator('.hamburger, [class*="menu"], #menu');
+              if (await menu.isVisible()) {
+                await menu.click();
+                // Tignan: lumabas ang nabigasyon?
+                await expect(page.locator('nav, .nav-links')).toBeVisible();
+              }
+            });
+            
+            // 3. Cart Page - gumagana ba?
+            test("Cart page - lumalabas nang tama", async ({ page }) => {
+              await page.goto('file://' + __dirname + '/cart.html');
+              await expect(page.locator('h1, h2')).toContainText(['Cart', 'Kariton']);
+            });
+          });
+          EOF
+
+      - name: Patakbuhin ang pagsusuri
+        run: npx playwright test test.spec.js --reporter=list
