@@ -15,7 +15,7 @@ jobs:
       - name: Suriin ang mga file
         run: |
           if [ ! -f index.html ]; then
-            echo "NAWAWALA ANG index.html!"
+            echo "Nawawala ang index.html!"
             exit 1
           fi
           echo "✅ Kumpleto ang mga file"
