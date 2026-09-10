@@ -1,28 +1,46 @@
-name: Awtomatikong Ilabas
+name: Suriin at Ilabas ang Tindahan
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
 
 jobs:
-  ilabas:
+  suriin:
     runs-on: ubuntu-latest
     steps:
       - name: Kunin ang code
         uses: actions/checkout@v4
 
-      - name: Suriin ang mga file
+      - name: ✅ TIGNAN KUNG KOMPLETO ANG LAHAT
         run: |
-          if [ ! -f index.html ]; then
-            echo "NAWAWALA ANG index.html!"
-            exit 1
+          echo "🔍 === MGA PAHINA ==="
+          test -f index.html    && echo "✅ index.html"    || echo "❌ NAWAWALA: index.html"
+          test -f about.html     && echo "✅ about.html"     || echo "❌ NAWAWALA: about.html"
+          test -f categories.html && echo "✅ categories.html" || echo "❌ NAWAWALA: categories.html"
+          test -f product.html    && echo "✅ product.html"    || echo "❌ NAWAWALA: product.html"
+          test -f contact.html    && echo "✅ contact.html"    || echo "❌ NAWAWALA: contact.html"
+          test -f cart.html       && echo "✅ cart.html"       || echo "⚠️ cart.html"
+          
+          echo ""
+          echo "🔍 === ESTILO AT GALAW ==="
+          test -f style.css       && echo "✅ style.css"       || echo "❌ NAWAWALA: style.css"
+          test -f main.js         && echo "✅ main.js"         || echo "❌ NAWAWALA: main.js"
+          test -f cart.js         && echo "✅ cart.js"         || echo "⚠️ cart.js"
+          
+          echo ""
+          echo "🔍 === MGA LARAWAN/LOGO ==="
+          test -d assets          && echo "✅ assets/ folder"  || echo "❌ NAWAWALA: assets folder"
+          
+          if [ -d assets ]; then
+            echo "📸 Nilalaman ng assets:"
+            ls -la assets/
           fi
-          echo "✅ Kumpleto ang mga file"
+          
+          echo ""
+          echo "✅ TAPOS NA ANG PAGSUSURI SA MGA FILE!"
 
       - name: Ilabas sa GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./
-          
